@@ -1,0 +1,11 @@
+--- libfranka/include/franka/robot.h	2020-08-29 03:31:37.602691723 -0500
++++ libfranka_updated/include/franka/robot.h	2020-08-29 03:29:23.922737075 -0500
+@@ -63,7 +63,7 @@
+    * @throw IncompatibleVersionException if this version of `libfranka` is not supported.
+    */
+   explicit Robot(const std::string& franka_address,
+-                 RealtimeConfig realtime_config = RealtimeConfig::kEnforce,
++                 RealtimeConfig realtime_config = RealtimeConfig::kIgnore,
+                  size_t log_size = 50);
+
+   /**
