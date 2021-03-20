@@ -1,9 +1,9 @@
 # Libfranka Non RT Patch
 Do you want to run Panda on a Non Real-Time (RT) Kernel? One of the use cases for this would be that Nvidia Drivers can be installed in an Non RT Kernel so that you can run computationally intensive tasks. One of the kernels I suggest using is [Liquorix](https://liquorix.net/#install). If that's the case then this Patch will help you.
 
-Download your [Libfranka](https://github.com/frankaemika/libfranka) in your ROS workspace. And then download this patch named "PatchFile" from this repo
+Download your [Libfranka](https://github.com/frankaemika/libfranka) in your ROS workspace. And then download this patch named "PatchFile" from this repo and paste inside recently downloaded/clones libfranka's root dirtectory.
 
-Apply this patch from this repo by this command:
+Apply the patch by this command:
 
 ```bash
 patch -p1 < PatchFile
