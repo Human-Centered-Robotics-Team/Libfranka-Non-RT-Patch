@@ -1,11 +1,76 @@
---- libfranka/include/franka/robot.h	2020-08-29 03:31:37.602691723 -0500
-+++ libfranka_updated/include/franka/robot.h	2020-08-29 03:29:23.922737075 -0500
-@@ -63,7 +63,7 @@
+From 99b70dc9228408e266f7c1bd469d4b35cc28ec61 Mon Sep 17 00:00:00 2001
+From: Krishna <chaitanyaradon89@gmail.com>
+Date: Sat, 20 Mar 2021 01:45:31 -0500
+Subject: [PATCH] 0.8.0 Sustem Version 4.0.1 Patch
+
+---
+ README.md              | 3 +++
+ include/franka/robot.h | 2 +-
+ src/control_loop.cpp   | 9 +++++----
+ src/robot_impl.h       | 2 +-
+ 4 files changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/README.md b/README.md
+index 7f2861b..565e961 100644
+--- a/README.md
++++ b/README.md
+@@ -16,3 +16,6 @@ With this library, you can control research versions of Franka Emika robots. See
+ [travis]: https://travis-ci.org/frankaemika/libfranka
+ [codecov-status]: https://codecov.io/gh/frankaemika/libfranka/branch/master/graph/badge.svg
+ [codecov]: https://codecov.io/gh/frankaemika/libfranka
++
++## 0.7.0 libfranka version non RT Patch
++This is a patched version of libfranka which runs in liquorix kernel. To use this download this source of libfranka in your catkin workspace and build it and subsequently re-build your catkin workspace. That should do the trick for running libfranka in Non-RT kernels! Please read this Github repo README: https://github.com/heracleia/Libfranka-Non-RT-Patch before using this source just as an FYI. Thanks!
+diff --git a/include/franka/robot.h b/include/franka/robot.h
+index da70415..669c018 100644
+--- a/include/franka/robot.h
++++ b/include/franka/robot.h
+@@ -63,7 +63,7 @@ class Robot {
     * @throw IncompatibleVersionException if this version of `libfranka` is not supported.
     */
    explicit Robot(const std::string& franka_address,
 -                 RealtimeConfig realtime_config = RealtimeConfig::kEnforce,
 +                 RealtimeConfig realtime_config = RealtimeConfig::kIgnore,
                   size_t log_size = 50);
-
+ 
    /**
+diff --git a/src/control_loop.cpp b/src/control_loop.cpp
+index f57b687..4873eb6 100644
+--- a/src/control_loop.cpp
++++ b/src/control_loop.cpp
+@@ -66,14 +66,15 @@ ControlLoop<T>::ControlLoop(RobotControl& robot,
+       control_callback_(std::move(control_callback)),
+       limit_rate_(limit_rate),
+       cutoff_frequency_(cutoff_frequency) {
+-  bool throw_on_error = robot_.realtimeConfig() == RealtimeConfig::kEnforce;
++  bool throw_on_error = robot_.realtimeConfig() == RealtimeConfig::kIgnore;
+   std::string error_message;
+   if (!setCurrentThreadToHighestSchedulerPriority(&error_message) && throw_on_error) {
+     throw RealtimeException(error_message);
+   }
+-  if (throw_on_error && !hasRealtimeKernel()) {
+-    throw RealtimeException("libfranka: Running kernel does not have realtime capabilities.");
+-  }
++  // The below lines should not have been un-commented. But they are so that I can easily run code with Nvidia PC
++  // if (throw_on_error && !hasRealtimeKernel()) {
++  //   throw RealtimeException("libfranka: Running kernel does not have realtime capabilities.");
++  // }
+ }
+ 
+ template <typename T>
+diff --git a/src/robot_impl.h b/src/robot_impl.h
+index efd1e3a..7551a90 100644
+--- a/src/robot_impl.h
++++ b/src/robot_impl.h
+@@ -24,7 +24,7 @@ class Robot::Impl : public RobotControl {
+  public:
+   explicit Impl(std::unique_ptr<Network> network,
+                 size_t log_size,
+-                RealtimeConfig realtime_config = RealtimeConfig::kEnforce);
++                RealtimeConfig realtime_config = RealtimeConfig::kIgnore);
+ 
+   RobotState update(const research_interface::robot::MotionGeneratorCommand* motion_command,
+                     const research_interface::robot::ControllerCommand* control_command) override;
+-- 
+2.7.4
+
